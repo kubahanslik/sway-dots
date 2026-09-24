@@ -1,0 +1,8 @@
+[user]
+	name = Jakub Hanslik
+	email = jakub@hanslikovi.com
+[init]
+	defaultBranch = main
+
+[includeIf "gitdir:~/CVUT/"]
+	path = .gitconfig-cvut

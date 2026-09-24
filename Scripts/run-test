@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+import subprocess
+import sys
+from pathlib import Path
+
+
+def main():
+    input_file = Path("input.txt")
+    expected_file = Path("output.txt")
+
+    with input_file.open("r") as f:
+        result = subprocess.run(
+            [sys.executable, "main.py"],
+            stdin=f,
+            capture_output=True,
+            text=True,
+        )
+
+    if result.returncode != 0:
+        print("❌ main.py crashed:")
+        print(result.stderr)
+        sys.exit(result.returncode)
+
+    expected_lines = expected_file.read_text().splitlines()
+    actual_lines = result.stdout.splitlines()
+
+    max_lines = max(len(expected_lines), len(actual_lines))
+    passed = True
+
+    print()
+    print(f"{'':2} {'Expected':<40} | {'Actual'}")
+    print("-" * 90)
+
+    for i in range(max_lines):
+        expected = expected_lines[i] if i < len(expected_lines) else "<missing>"
+        actual = actual_lines[i] if i < len(actual_lines) else "<missing>"
+
+        if len(expected.strip()) == 0:
+            continue
+
+        if expected == actual:
+            symbol = "✓"
+        else:
+            symbol = "✗"
+            passed = False
+
+        print(f"{symbol} {expected:<40} | {actual}")
+
+    print("-" * 90)
+
+    if passed and len(expected_lines) == len(actual_lines):
+        print("✓ All output matches!")
+    else:
+        print("✗ Output does not match.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

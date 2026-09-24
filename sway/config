@@ -54,13 +54,6 @@ workspace 4 output HDMI-A-1
 workspace 5 output HDMI-A-1
 workspace 6 output HDMI-A-1
 
-# Assign applications to workspaces
-assign [app_id="firefox"] "1"
-
-assign [app_id="discord"] "4"
-assign [class="spotify"] "5"
-assign [app_id="obs"] "6"
-
 
 ### Key bindings
 #

@@ -1,0 +1,5 @@
+#[font]
+#normal = { family = "Ubuntu Nerd Font", style = "Regular" }
+#bold = { family = "Ubuntu Nerd Font", style = "Bold" }
+#italic = { family = "Ubuntu Nerd Font", style = "Italic" }
+#size = 13
