@@ -1,8 +1,12 @@
 [user]
 	name = Jakub Hanslik
 	email = jakub@hanslikovi.com
+[core]
+	editor = vim
 [init]
 	defaultBranch = main
+[alias]
+	ll = log --oneline --graph --all --decorate
 
 [includeIf "gitdir:~/CVUT/"]
 	path = .gitconfig-cvut
