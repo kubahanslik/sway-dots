@@ -14,7 +14,7 @@ return {
   },
   {
     "L3MON4D3/LuaSnip",
-    enabled = false,
+    enabled = true, -- Causes error if disabled while pressing tab in lua fiies
   },
   {
     "rafamadriz/friendly-snippets",
