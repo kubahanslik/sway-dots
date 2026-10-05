@@ -12,6 +12,14 @@ return {
       require "configs.lspconfig"
     end,
   },
+  {
+    "L3MON4D3/LuaSnip",
+    enabled = false,
+  },
+  {
+    "rafamadriz/friendly-snippets",
+    enabled = false,
+  },
 
   -- test new blink
   -- { import = "nvchad.blink.lazyspec" },
