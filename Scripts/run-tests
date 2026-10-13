@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+
+import subprocess
+import os
+import sys
+from pathlib import Path
+
+
+test_input_file = "./input.txt" # Default hard coded file names if no test directory is found
+test_output_file = "./output.txt" # Default hard coded file names if no test directory is found
+
+test_directory = "./tests/"
+
+
+def test_file(exe_interpreter: str | list, test_input_f: str, test_output_f: str, verbose: bool) -> tuple[int, int]: # Returns total amount of lines vs successful amount of lines
+    print(f"\n[+] Testing {test_input_f} - {test_output_f}")
+
+    completed_process: subprocess.CompletedProcess
+    success_c = 0
+
+    with open(test_input_f, "r") as ifd:
+        completed_process = subprocess.run(exe_interpreter, stdin=ifd, text=True, capture_output=True)
+        
+        with open(test_output_f, "r") as ofd:
+            lines_f = ofd.readlines()
+        
+            for i, (l_stdout, l_fout) in enumerate(zip(completed_process.stdout.split("\n"), lines_f)):
+                l_fout = l_fout.strip()
+                l_stdout = l_stdout.strip()
+                if l_fout == l_stdout:
+                    if verbose:
+                        print(f"✓ {i+1}: {l_fout}")
+                    success_c += 1
+                else:
+                    print(f"✗ {i+1}: Expected - {l_fout} | Got - {l_stdout}")
+
+            return (len(lines_f), success_c)
+
+
+def main(verbose: bool):
+    main_files = {"./main":"main", "./build/main": "./build/main", "../build/main": "../build/main", "main.py": [sys.executable, "main.py"]}
+
+    interpreter: str | list | None = None
+
+    for execf in main_files.keys():
+        if Path(execf).exists():
+            interpreter = main_files[execf]
+            break
+
+
+    if interpreter == None:
+        print(
+f'''\
+[!] No appropriate main file found
+    Options are: {", ".join(main_files.keys())}
+'''
+)
+        return 1
+
+
+    total_c: int = 0
+    success_c: int = 0
+
+    if Path(test_directory).exists():
+        tests = os.listdir(test_directory)
+
+        test_inputs = [test_directory + x for x in tests if "in" in x and "win" not in x]
+
+        if len(test_inputs) == 0:
+            print(
+f'''\
+[!] No proper test input files found in the {test_directory} directory.
+    Files must include an "*in*" character sequence and have a corresponding output file in the same format just with a replaced "in" for "out"!
+''')
+            return 4
+
+        for ti in test_inputs:
+            test_output = ti.replace("in", "out", 1)
+            if not Path(test_output).exists():
+                print(f"[!] No corresponding output file found for input {ti}\nExpected output file: {test_output}")
+                return 3
+            (total_lines, successful_lines) = test_file(interpreter, ti, test_output, verbose=verbose)
+
+            total_c += total_lines
+            success_c += successful_lines
+
+    elif Path(test_input_file).exists() and Path(test_output_file).exists():
+        (total_c, success_c) = test_file(interpreter, test_input_file, test_output_file, verbose=True)
+    else:
+        print(
+f'''\
+[!] No {test_directory} directory or [{test_input_file}, {test_output_file}] pair found in the current directory.
+''')
+        return 2
+
+    print(
+f'''\
+Tests finished!
+
+Total lines tested: {total_c}
+Successful tests: {success_c}
+
+Success percentage: {success_c/total_c}
+''')
+
+
+if __name__=='__main__':
+    verbose = "-v" in sys.argv
+        
+
+    rv =  main(verbose=verbose)
+    exit(rv)
